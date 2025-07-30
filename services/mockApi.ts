@@ -1,7 +1,7 @@
 
 import type { Student, Class, Exam, Mark, Result, DashboardStats } from '../types';
 
-const API_URL = 'http://localhost:5000/api'; // Using relative URL for proxying in production
+const API_URL = 'https://palazhi-result.vercel.app/api'; // Using relative URL for proxying in production
 
 const getAuthToken = () => localStorage.getItem('authToken');
 
