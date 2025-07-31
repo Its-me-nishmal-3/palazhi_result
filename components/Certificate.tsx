@@ -1,6 +1,5 @@
 
 import React, { useRef, useState, useEffect } from 'react';
-import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { Result } from '../types';
 import { Download, Award, GraduationCap } from './icons';
@@ -29,19 +28,12 @@ const Certificate: React.FC<CertificateProps> = ({ result }) => {
 
   const handleDownload = () => {
     if (certificateRef.current) {
-      html2canvas(certificateRef.current, { scale: 2 }).then((canvas) => {
+      html2canvas(certificateRef.current, { scale: 2, useCORS: true }).then((canvas) => {
         const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-        const canvasWidth = canvas.width;
-        const canvasHeight = canvas.height;
-        const ratio = canvasWidth / canvasHeight;
-        const width = pdfWidth - 20; // with margin
-        const height = width / ratio;
-
-        pdf.addImage(imgData, 'PNG', 10, 10, width, height);
-        pdf.save(`Certificate-${result.student.name.replace(' ','-')}-${result.student.id}.pdf`);
+        const link = document.createElement('a');
+        link.href = imgData;
+        link.download = `Certificate-${result.student.name.replace(' ','-')}-${result.student.id}.png`;
+        link.click();
       });
     }
   };
@@ -65,7 +57,7 @@ const Certificate: React.FC<CertificateProps> = ({ result }) => {
                     <p><strong>Date of Birth:</strong> {result.student.dob}</p>
                     <p><strong>Class:</strong> {result.class.name}</p>
                 </div>
-                <img src={result.student.profilePictureUrl} alt="Student" className="w-28 h-28 rounded-full border-4 border-primary-300 object-cover" />
+                <img src={result.student.profilePictureUrl} alt="Student" className="w-28 h-28 rounded-full border-4 border-primary-300 object-cover" crossOrigin="anonymous" />
             </div>
 
             <div className="mb-8 relative z-10">
@@ -105,6 +97,11 @@ const Certificate: React.FC<CertificateProps> = ({ result }) => {
             <div className="mt-12 flex justify-between items-end relative z-10">
                 <div>
                     <p>Issued On: {new Date().toLocaleDateString()}</p>
+                    {result.percentage >= 30 ? (
+                        <p className="text-green-700 dark:text-green-300 mt-2 font-semibold">You are eligible for higher studies.</p>
+                    ) : (
+                        <p className="text-red-700 dark:text-red-300 mt-2 font-semibold">You are not eligible for higher studies.</p>
+                    )}
                 </div>
                 <div className="text-center">
                     <div className="w-48 h-12 border-b-2 border-gray-400"></div>
@@ -116,7 +113,7 @@ const Certificate: React.FC<CertificateProps> = ({ result }) => {
             </div>
         </div>
 
-        {result.allSubjectsPerfect && (
+        {result.percentage >= 30 && (
             <div className="text-center mt-6">
                 <button
                     onClick={handleDownload}
@@ -125,7 +122,6 @@ const Certificate: React.FC<CertificateProps> = ({ result }) => {
                     <Download size={20} />
                     Download Certificate
                 </button>
-                <p className="text-green-700 dark:text-green-300 mt-2 font-semibold">Congratulations on your perfect score!</p>
             </div>
         )}
     </div>

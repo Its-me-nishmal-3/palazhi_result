@@ -76,7 +76,7 @@ const getCollegeName = async (req, res) => {
         let setting = await Setting.findOne({ key: 'collegeName' });
         if (!setting) {
             // Create a default if it doesn't exist
-            setting = await Setting.create({ key: 'collegeName', value: 'Global Tech Institute' });
+            setting = await Setting.create({ key: 'collegeName', value: 'PM ALIHAJI MEMORIAL THAHFEELUL QURA`N COLLEGE' });
         }
         res.json({ name: setting.value });
     } catch (error) {
