@@ -103,10 +103,10 @@ const PublicPortal: React.FC = () => {
             </div>
         )}
       </div>
-      {/* <footer className="absolute bottom-4 text-center text-gray-500 dark:text-gray-400 text-sm">
+      <footer className="absolute bottom-4 text-center text-gray-500 dark:text-gray-400 text-sm">
         <p>Marks Management System &copy; {new Date().getFullYear()}</p>
         <Link to="/admin/login" className="hover:underline">Admin Login</Link>
-      </footer> */}
+      </footer>
     </div>
   );
 };
