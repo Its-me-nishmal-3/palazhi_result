@@ -26,15 +26,42 @@ const Certificate: React.FC<CertificateProps> = ({ result }) => {
     fetchCollegeName();
   }, []);
 
-  const handleDownload = () => {
-    if (certificateRef.current) {
-      html2canvas(certificateRef.current, { scale: 2, useCORS: true }).then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
-        const link = document.createElement('a');
-        link.href = imgData;
-        link.download = `Certificate-${result.student.name.replace(' ','-')}-${result.student.id}.png`;
-        link.click();
+  const handleDownload = async () => {
+    const certificateElement = certificateRef.current;
+    if (!certificateElement) return;
+
+    const originalStyles = {
+      width: certificateElement.style.width,
+      height: certificateElement.style.height,
+    };
+
+    // Apply fixed dimensions for capturing
+    certificateElement.style.width = '920px';
+    certificateElement.style.height = '1110px';
+
+    try {
+      const canvas = await html2canvas(certificateElement, {
+        scale: 2,
+        useCORS: true,
+        width: 920,
+        height: 1110,
+        windowWidth: 920,
+        windowHeight: 1110,
       });
+
+      const imgData = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.href = imgData;
+      link.download = `Certificate-${result.student.name.replace(' ', '-')}-${result.student.id}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error downloading certificate:', error);
+    } finally {
+      // Restore original styles to avoid breaking the UI
+      certificateElement.style.width = originalStyles.width;
+      certificateElement.style.height = originalStyles.height;
     }
   };
 
